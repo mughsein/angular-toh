@@ -33,7 +33,7 @@ class Hero {
   }
 }
 
-describe('Tutorial part 3', () => {
+describe('Tutorial part 4', () => {
   beforeAll(() => browser.get(''));
   describe('Initial page', initialPageTests);
   describe('Select hero', selectHeroTests);
@@ -42,7 +42,7 @@ describe('Tutorial part 3', () => {
 
 function initialPageTests() {
   it(`has title '${expectedTitle}'`, async () => {
-      expect(await browser.getTitle()).toEqual(expectedTitle);
+    expect(await browser.getTitle()).toEqual(expectedTitle);
   });
 
   it(`has h1 '${expectedH1}'`, async () => {
@@ -80,9 +80,12 @@ function selectHeroTests() {
 
   it('shows selected hero details', async () => {
     const page = getPageElts();
+    const message = await getMessage();
     const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(targetHero.name.toUpperCase());
+    // Message text contain id number matches the hero.id number
+    expect(await message.getText()).toContain(hero.id);
   });
 }
 
@@ -127,4 +130,10 @@ function getPageElts() {
     selected: element(by.css('app-root li.selected')),
     heroDetail: element(by.css('app-root > div, app-root > app-heroes > app-hero-detail > div'))
   };
+}
+
+async function getMessage() {
+  const hero = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
+  await hero.click();
+  return element.all(by.css('app-root > app-messages > div > div')).get(1);
 }
